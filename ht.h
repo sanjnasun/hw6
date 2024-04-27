@@ -482,9 +482,12 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
         throw std::logic_error("No space left");
     }
     
-    mIndex_++; 
+    
     std::vector<HashItem*> prev = table_;
+    mIndex_++; 
+    //HASH_INDEX_T moreSpace =  CAPACITIES[mIndex_];
     std::vector<HashItem*> nextTable(CAPACITIES[mIndex_], nullptr);
+    
     table_ = nextTable;
     //HASH_INDEX_T moreSpace =  CAPACITIES[mIndex_];
     
@@ -492,14 +495,16 @@ void HashTable<K,V,Prober,Hash,KEqual>::resize()
     for (size_t i = 0; i < oldSize; i++) 
     {
         
-        if(prev[i] == nullptr)
-        {
-            continue;
-        }
-        else if(prev[i] != nullptr && !prev[i]->deleted)
+        
+        if(prev[i] != nullptr && !prev[i]->deleted)
         {
             HASH_INDEX_T probeSeq = probe(prev[i]->item.first);
             table_[probeSeq] = prev[i];
+        }
+        else if(prev[i] == nullptr)
+        {
+            continue;
+            //std::cout << "working" << std::endl;
         }
         else
         {
